@@ -6,15 +6,24 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "attendance_details_section",
   "employee",
   "enroll_no",
+  "column_break_3",
   "time",
   "date",
+  "attendance_type_section",
   "type",
   "punch",
+  "column_break_7",
   "device"
  ],
  "fields": [
+  {
+   "fieldname": "attendance_details_section",
+   "fieldtype": "Section Break",
+   "label": "Attendance Details"
+  },
   {
    "fieldname": "employee",
    "fieldtype": "Link",
@@ -27,8 +36,13 @@
   {
    "fieldname": "enroll_no",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Enroll No",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "time",
@@ -49,6 +63,12 @@
    "read_only": 1
   },
   {
+   "fieldname": "attendance_type_section",
+   "fieldtype": "Section Break",
+   "label": "Log Type & Device"
+  },
+  {
+   "bold": 1,
    "default": "IN",
    "fieldname": "type",
    "fieldtype": "Select",
@@ -62,8 +82,12 @@
   {
    "fieldname": "punch",
    "fieldtype": "Data",
-   "label": "Punch",
+   "label": "Punch Code",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "device",
@@ -78,7 +102,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2021-04-02 20:21:46.381798",
+ "modified": "2024-01-01 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "ZK",
  "name": "Device Log",

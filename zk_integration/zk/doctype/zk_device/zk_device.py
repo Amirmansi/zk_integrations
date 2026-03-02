@@ -6,12 +6,9 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from zk import ZK, const
 from datetime import datetime, date, timedelta, time
 from frappe.utils import to_timedelta
 import json
-# from zk.doctype.device_log.device_log import create_employee_checkin
-# from zk_integration.zk.doctype.device_log.device_log import create_employee_checkin
 from frappe.utils.data import DATE_FORMAT, TIME_FORMAT
 from dateutil import parser
 from zk_integration.zk.doctype.zk_device.bio_time import get_device_transactions, get_devices_data
@@ -29,6 +26,7 @@ class ZKDevice(Document):
 
 	@frappe.whitelist()
 	def get_device_logs_direct (self, show_progress=False):
+		from zk import ZK
 		conn = None
 		zk = ZK(self.ip, port=self.port, password=self.password, timeout=20,
 				force_udp=self.udp or True, ommit_ping=self.ping or True)
@@ -65,7 +63,7 @@ class ZKDevice(Document):
 				try:
 					# if True:
 					# frappe.msgprint(str(log))
-					log.status = 'IN' if log.status == 1 else 'OUT'
+					log.status = 'IN' if log.status == 0 else 'OUT'
 
 					# log.status = log.status.upper()
 					name = "{}-{}-{}".format(log.user_id,
@@ -133,7 +131,7 @@ class ZKDevice(Document):
 						count * 100 / total, title=_("Getting Logs..."))
 				count += 1
 				log.timestamp = parser.parse(str(log.punch_time))
-				log.status = log.punch_state == "0"
+				log.status = 'IN' if log.punch_state == "0" else 'OUT'
 				log.user_id = log.emp_code
 				log.punch = log.punch_state
     
@@ -148,7 +146,6 @@ class ZKDevice(Document):
 				try:
 					# if True:
 					# frappe.msgprint(str(log))
-					log.status = 'IN' if log.status == 0 else 'OUT'
 
 					# log.status = log.status.upper()
 					name = "{}-{}-{}".format(log.user_id,
@@ -195,7 +192,8 @@ def sync_employee():
 	)
 	""")
     frappe.db.commit()
-    frappe.msgprint(_("Done"))
+    if frappe.session and frappe.session.user and frappe.session.user != "Guest":
+        frappe.msgprint(_("Done"))
 
 
 @frappe.whitelist()

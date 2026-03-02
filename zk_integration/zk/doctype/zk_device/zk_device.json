@@ -8,19 +8,21 @@
  "field_order": [
   "device_name",
   "branch",
+  "active",
   "connection_details",
   "ip",
   "password",
   "period",
-  "active",
   "ping",
   "column_break_5",
   "port",
   "get_data_type",
+  "udp",
+  "auto_attendance_section",
   "auto_attendance",
   "get_after_mins",
+  "column_break_auto",
   "excecution_time",
-  "udp",
   "biotime_details_section",
   "serial_no",
   "device_id",
@@ -56,7 +58,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "IP",
+   "label": "IP Address",
    "reqd": 1
   },
   {
@@ -65,6 +67,18 @@
    "fieldtype": "Int",
    "label": "Password",
    "reqd": 1
+  },
+  {
+   "default": "5",
+   "fieldname": "period",
+   "fieldtype": "Int",
+   "label": "Period Difference (Mins)"
+  },
+  {
+   "default": "1",
+   "fieldname": "ping",
+   "fieldtype": "Check",
+   "label": "Ping"
   },
   {
    "fieldname": "column_break_5",
@@ -78,10 +92,91 @@
    "reqd": 1
   },
   {
+   "columns": 1,
+   "default": "Direct",
+   "fieldname": "get_data_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Data Source",
+   "options": "Direct\nBioTime"
+  },
+  {
+   "default": "1",
+   "fieldname": "udp",
+   "fieldtype": "Check",
+   "label": "UDP"
+  },
+  {
+   "fieldname": "auto_attendance_section",
+   "fieldtype": "Section Break",
+   "label": "Auto Attendance"
+  },
+  {
    "default": "1",
    "fieldname": "auto_attendance",
    "fieldtype": "Check",
-   "label": "Auto Attendance "
+   "label": "Enable Auto Attendance"
+  },
+  {
+   "default": "60",
+   "depends_on": "auto_attendance",
+   "fieldname": "get_after_mins",
+   "fieldtype": "Int",
+   "label": "Fetch Every (Mins)"
+  },
+  {
+   "fieldname": "column_break_auto",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Now",
+   "depends_on": "auto_attendance",
+   "fieldname": "excecution_time",
+   "fieldtype": "Datetime",
+   "label": "Next Execution Time",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.get_data_type=='BioTime'",
+   "fieldname": "biotime_details_section",
+   "fieldtype": "Section Break",
+   "label": "BioTime Details"
+  },
+  {
+   "depends_on": "eval:doc.get_data_type=='BioTime'",
+   "columns": 2,
+   "fieldname": "serial_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Serial No",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.get_data_type=='BioTime'",
+   "fieldname": "device_id",
+   "fieldtype": "Data",
+   "label": "Device ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_19",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.get_data_type=='BioTime'",
+   "fieldname": "alias",
+   "fieldtype": "Data",
+   "label": "Device Alias",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.get_data_type=='BioTime'",
+   "fieldname": "area",
+   "fieldtype": "Data",
+   "label": "Area",
+   "read_only": 1
   },
   {
    "collapsible": 1,
@@ -109,42 +204,10 @@
    "read_only": 1
   },
   {
-   "default": "5",
-   "fieldname": "period",
-   "fieldtype": "Int",
-   "label": "Period Difference (Mins)"
-  },
-  {
-   "default": "60",
-   "depends_on": "auto_attendance",
-   "fieldname": "get_after_mins",
-   "fieldtype": "Int",
-   "label": "Get After (Mins)"
-  },
-  {
-   "default": "Now",
-   "depends_on": "auto_attendance",
-   "fieldname": "excecution_time",
-   "fieldtype": "Datetime",
-   "label": "Excecution Time",
-   "read_only": 1
-  },
-  {
-   "default": "1",
-   "fieldname": "ping",
-   "fieldtype": "Check",
-   "label": "Ping"
-  },
-  {
-   "default": "1",
-   "fieldname": "udp",
-   "fieldtype": "Check",
-   "label": "UDP"
-  },
-  {
    "default": "1",
    "fieldname": "active",
    "fieldtype": "Check",
+   "in_list_view": 1,
    "label": "Active"
   },
   {
@@ -155,57 +218,11 @@
    "in_standard_filter": 1,
    "label": "Branch",
    "options": "Branch"
-  },
-  {
-   "columns": 1,
-   "default": "Direct",
-   "fieldname": "get_data_type",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Get Data Type",
-   "options": "Direct\nBioTime"
-  },
-  {
-   "fieldname": "biotime_details_section",
-   "fieldtype": "Section Break",
-   "label": "BioTime Details"
-  },
-  {
-   "fieldname": "alias",
-   "fieldtype": "Data",
-   "label": "Device Alias",
-   "read_only": 1
-  },
-  {
-   "fieldname": "area",
-   "fieldtype": "Data",
-   "label": "Area",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_19",
-   "fieldtype": "Column Break"
-  },
-  {
-   "columns": 2,
-   "fieldname": "serial_no",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Serial No",
-   "read_only": 1
-  },
-  {
-   "fieldname": "device_id",
-   "fieldtype": "Data",
-   "label": "Device ID",
-   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-09-16 19:55:54.736714",
+ "modified": "2024-01-01 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "ZK",
  "name": "ZK Device",
