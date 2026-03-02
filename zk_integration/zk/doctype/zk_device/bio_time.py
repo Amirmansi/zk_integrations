@@ -19,7 +19,9 @@ def get_bio_settings():
         frappe.throw(_("Please set BioTime Settings First"))
 
     return get_bio_token(
-        bio_settings.url, bio_settings.user, bio_settings.pwd)
+        bio_settings.url.rstrip("/"), bio_settings.user, bio_settings.pwd,
+        timeout=bio_settings.timout or TIMEOUT,
+        page_size=bio_settings.page_size or PAGE_SIZE)
 
 
 def get_bio_token(url, user, pwd , timeout = 600 , page_size = 200 ):
@@ -58,7 +60,6 @@ def get_bio_token(url, user, pwd , timeout = 600 , page_size = 200 ):
         "url": url,
         "timeout": timeout,
         "page_size": page_size,
-        "url": url,
         "token": token
     })
 
