@@ -1,0 +1,12 @@
+/* Right-to-left layout overrides for Arabic Egypt (ar-EG) locale */
+
+html[dir="rtl"] .form-section .section-head {
+	letter-spacing: 0;
+	border-bottom: 2px solid #e3eeff;
+	border-top: none;
+}
+
+html[dir="rtl"] .zk-badge-in,
+html[dir="rtl"] .zk-badge-out {
+	display: inline-block;
+}
