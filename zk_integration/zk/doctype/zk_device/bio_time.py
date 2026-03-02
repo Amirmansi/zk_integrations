@@ -36,7 +36,12 @@ def get_bio_token(url, user, pwd , timeout = 600 , page_size = 200 ):
     headers = {
         "Content-Type": "application/json"
     }
-    response = requests.post(method_url, headers=headers, json=json,timeout=timeout or TIMEOUT)
+    try:
+        response = requests.post(method_url, headers=headers, json=json, timeout=timeout or TIMEOUT)
+    except requests.exceptions.Timeout:
+        frappe.throw(_("Connection to BioTime Server timed out. Please check the server URL and network connectivity."))
+    except requests.exceptions.ConnectionError:
+        frappe.throw(_("Could not connect to BioTime Server. Please check the server URL and network connectivity."))
     json_response = {}
     token = None
     try:
@@ -80,8 +85,13 @@ def get_devices_data():
         "Content-Type": "application/json",
         "Authorization" : f"JWT {biotime_data.token}"
     }
-    response = requests.request(
-        "GET",method_url, headers=headers, json=json , params=params,timeout=biotime_data.timeout or TIMEOUT)
+    try:
+        response = requests.request(
+            "GET", method_url, headers=headers, json=json, params=params, timeout=biotime_data.timeout or TIMEOUT)
+    except requests.exceptions.Timeout:
+        frappe.throw(_("Connection to BioTime Server timed out while fetching devices."))
+    except requests.exceptions.ConnectionError:
+        frappe.throw(_("Could not connect to BioTime Server while fetching devices."))
     json_response = {}
     try:
         json_response = response.json()
@@ -94,7 +104,7 @@ def get_devices_data():
         data = json_response.get("data") or []
         next = json_response.get("next")
         if next:
-            data.extend(fetch_next_data(method_url,headers,json,params) or [])
+            data.extend(fetch_next_data(method_url, headers, json, params, timeout=biotime_data.timeout or TIMEOUT) or [])
 
     return data
 
@@ -122,8 +132,13 @@ def get_device_transactions(serial=None , last_log = None , fetch_next = 1):
         "Content-Type": "application/json",
         "Authorization" : f"JWT {biotime_data.token}"
     }
-    response = requests.request(
-        "GET", method_url, headers=headers, json=json,params=params,timeout=biotime_data.timeout or TIMEOUT)
+    try:
+        response = requests.request(
+            "GET", method_url, headers=headers, json=json, params=params, timeout=biotime_data.timeout or TIMEOUT)
+    except requests.exceptions.Timeout:
+        frappe.throw(_("Connection to BioTime Server timed out while fetching transactions."))
+    except requests.exceptions.ConnectionError:
+        frappe.throw(_("Could not connect to BioTime Server while fetching transactions."))
     json_response = {}
     try:
         json_response = response.json()
@@ -135,20 +150,26 @@ def get_device_transactions(serial=None , last_log = None , fetch_next = 1):
         data = json_response.get("data") or []
         next = json_response.get("next")
         if next and fetch_next:
-            data.extend(fetch_next_data(method_url,headers,json,params) or [])
+            data.extend(fetch_next_data(method_url, headers, json, params, timeout=biotime_data.timeout or TIMEOUT) or [])
 
     return data
 
 
 
-def fetch_next_data(method_url,headers,json={},params={}):
+def fetch_next_data(method_url, headers, json=None, params=None, timeout=TIMEOUT):
     data = []
-    
-    params ['page'] = (params.get("page") or 0) + 1 
+    json = json or {}
+    params = params or {}
+    params['page'] = (params.get("page") or 0) + 1 
     
     # frappe.msgprint(str(next))
-    response = requests.request(
-        "GET", method_url, headers=headers, json=json,params=params)
+    try:
+        response = requests.request(
+            "GET", method_url, headers=headers, json=json, params=params, timeout=timeout or TIMEOUT)
+    except requests.exceptions.Timeout:
+        frappe.throw(_("Connection to BioTime Server timed out while fetching paginated data."))
+    except requests.exceptions.ConnectionError:
+        frappe.throw(_("Could not connect to BioTime Server while fetching paginated data."))
     json_response = {}
     try:
         json_response = response.json()
@@ -159,7 +180,7 @@ def fetch_next_data(method_url,headers,json={},params={}):
         data = json_response.get("data") or []
         next_t = json_response.get("next")
         if next_t:
-            data.extend(fetch_next_data(method_url,headers,json,params) or [])
+            data.extend(fetch_next_data(method_url, headers, json, params, timeout=timeout) or [])
 
     return data
 
